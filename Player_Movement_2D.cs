@@ -17,6 +17,9 @@ public class Player_Movement_2D : MonoBehaviour {
     [SerializeField] private float check_ground_radius;
     [SerializeField] private LayerMask ground_layer;
 
+    [SerializeField] private float remember_grounded_for;
+    [SerializeField] private float last_time_grounded;
+
     // Start is called before the first frame update
     void Start() {
         rigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
@@ -35,7 +38,7 @@ public class Player_Movement_2D : MonoBehaviour {
 
         rigidBody2D.velocity = new Vector2(move_by, rigidBody2D.velocity.y);
 
-        if (Input.GetKey(KeyCode.Space) && is_grounded) {
+        if (Input.GetKey(KeyCode.Space) && (is_grounded || Time.time - last_time_grounded <= remember_grounded_for)) {
             rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jump_Force);
         }
 
@@ -45,6 +48,9 @@ public class Player_Movement_2D : MonoBehaviour {
             is_grounded = true;
         }
         else {
+            if (is_grounded) {
+                last_time_grounded = Time.time;
+            }
             is_grounded = false;
         }
 
