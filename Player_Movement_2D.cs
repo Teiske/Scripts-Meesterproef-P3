@@ -7,6 +7,7 @@ public class Player_Movement_2D : MonoBehaviour {
     private Rigidbody2D rigidBody2D;
     
     [SerializeField] private float max_speed;
+    [SerializeField] private float jump_Force;
     //[SerializeField] private float movement_scalar;
 
     // Start is called before the first frame update
@@ -26,6 +27,10 @@ public class Player_Movement_2D : MonoBehaviour {
         float move_by = x_movement * max_speed;
 
         rigidBody2D.velocity = new Vector2(move_by, rigidBody2D.velocity.y);
+
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jump_Force);
+        }
 
         //if (rigidBody2D.velocity.magnitude < max_speed) {
         //    Vector2 movement = new Vector2(x_movement, 0);
