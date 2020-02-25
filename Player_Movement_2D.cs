@@ -37,18 +37,21 @@ public class Player_Movement_2D : MonoBehaviour {
         CheckIfGrounded();
     }
 
+    // Move is called when either A/D or the left/right arrow keys are pressed
     private void Move() {
         float x_movement = Input.GetAxis("Horizontal");
         float move_by = x_movement * max_speed;
         rigidBody2D.velocity = new Vector2(move_by, rigidBody2D.velocity.y);
     }
 
+    // Jump is called when the space key is pressed
     private void Jump() {
         if (Input.GetKey(KeyCode.Space) && (is_grounded || Time.time - last_time_grounded <= remember_grounded_for)) {
             rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jump_Force);
         }
     }
 
+    // BetterJump is called after jump to smooth the jump in the air and the fall back down
     private void BetterJump() {
         if (rigidBody2D.velocity.y < 0) {
             rigidBody2D.velocity += Vector2.up * Physics2D.gravity * (fall_multiplier - 1) * Time.deltaTime;
@@ -58,6 +61,7 @@ public class Player_Movement_2D : MonoBehaviour {
         }
     }
 
+    // CheckIfGrounded is called at a fixed interval in FixedUpdate to check if the playe ris grounded
     private void CheckIfGrounded() {
         Collider2D collider = Physics2D.OverlapCircle(is_ground_checker.position, check_ground_radius, ground_layer);
         if (collider != null) {
