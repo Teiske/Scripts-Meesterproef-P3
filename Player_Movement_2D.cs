@@ -61,7 +61,7 @@ public class Player_Movement_2D : MonoBehaviour {
         }
     }
 
-    // CheckIfGrounded is called at a fixed interval in FixedUpdate to check if the playe ris grounded
+    // CheckIfGrounded is called at a fixed interval in FixedUpdate to check if the player is grounded
     private void CheckIfGrounded() {
         Collider2D collider = Physics2D.OverlapCircle(is_ground_checker.position, check_ground_radius, ground_layer);
         if (collider != null) {
