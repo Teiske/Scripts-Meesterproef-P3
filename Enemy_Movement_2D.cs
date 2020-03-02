@@ -5,9 +5,13 @@ public class Enemy_Movement_2D : MonoBehaviour {
     [SerializeField] private float move_speed;
     [SerializeField] private float ray_distance;
     [SerializeField] private int damage_to_player;
+    [SerializeField] private float damage_delay;
+    [SerializeField] private float damage_timer;
     [SerializeField] private Transform wall_detection;
 
     private bool moving_right = true;
+
+    private bool damage_dealt = false;
 
     private int layer_invisble_wall;
 
@@ -18,7 +22,14 @@ public class Enemy_Movement_2D : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        
+        // If damage has been dealt, wait a few seconds before dealing damage again
+        if(damage_dealt == true) {
+            damage_timer += Time.deltaTime;
+            if (damage_timer >= damage_delay) {
+                damage_timer = 0f;
+                damage_dealt = false;
+            }
+        }
     }
 
     // FixedUpdate is called at a fixed time interval
@@ -41,8 +52,10 @@ public class Enemy_Movement_2D : MonoBehaviour {
             }
         }
 
-        if (wall_info.transform.gameObject.tag == "Player") {
+        // If the hits the player, deal damage to the player
+        if (wall_info.transform.gameObject.tag == "Player" && damage_dealt == false) {
             FindObjectOfType<Health_System_2D>().DamagePlayer(damage_to_player);
+            damage_dealt = true;
         }
     }
 }
