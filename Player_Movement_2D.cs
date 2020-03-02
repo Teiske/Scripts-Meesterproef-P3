@@ -19,9 +19,12 @@ public class Player_Movement_2D : MonoBehaviour {
     [SerializeField] private float remember_grounded_for;
     [SerializeField] private float last_time_grounded;
 
+    private int layer_invisble_wall;
+
     // Start is called before the first frame update
     void Start() {
         rigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
+        layer_invisble_wall = LayerMask.NameToLayer("Invisible_Wall");
     }
 
     // Update is called once per frame
@@ -72,6 +75,12 @@ public class Player_Movement_2D : MonoBehaviour {
                 last_time_grounded = Time.time;
             }
             is_grounded = false;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision_2D) {
+        if (collision_2D.gameObject.tag == "Invisible_Wall") {
+            Physics2D.IgnoreCollision(collision_2D.collider, GetComponent<Collider2D>());
         }
     }
 }
