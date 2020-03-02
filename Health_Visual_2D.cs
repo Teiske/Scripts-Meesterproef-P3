@@ -1,9 +1,17 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Health_Visual_2D : MonoBehaviour {
 
     [SerializeField] private Sprite health_sprite;
+
+    private List<Health_Image> health_image_list;
+
+    // Awake is called when the script instance is being loaded.
+    private void Awake() {
+        health_image_list = new List<Health_Image>();
+    }
 
     // Start is called before the first frame update
     private void Start() {
@@ -30,10 +38,22 @@ public class Health_Visual_2D : MonoBehaviour {
         health_gameobject.GetComponent<RectTransform>().anchoredPosition = anchord_position;
         health_gameobject.GetComponent<RectTransform>().sizeDelta = new Vector2(10, 10);
 
-        // Set iamage sprite
-        Image health_image = health_gameobject.GetComponent<Image>();
-        health_image.sprite = health_sprite;
+        // Set image sprite
+        Image health_image_UI = health_gameobject.GetComponent<Image>();
+        health_image_UI.sprite = health_sprite;
 
-        return health_image;
+        Health_Image health_Image = new Health_Image(health_image_UI);
+        health_image_list.Add(health_Image);
+
+        return health_image_UI;
+    }
+
+    public class Health_Image {
+
+        private Image health_image;
+
+        public Health_Image(Image healht_image) {
+            health_image = health_image;
+        }
     }
 }

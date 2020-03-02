@@ -4,6 +4,7 @@ public class Enemy_Movement_2D : MonoBehaviour {
 
     [SerializeField] private float move_speed;
     [SerializeField] private float ray_distance;
+    [SerializeField] private int damage_to_player;
     [SerializeField] private Transform wall_detection;
 
     private bool moving_right = true;
@@ -38,6 +39,10 @@ public class Enemy_Movement_2D : MonoBehaviour {
                 transform.eulerAngles = new Vector3(0, 0, 0);
                 moving_right = true;
             }
+        }
+
+        if (wall_info.transform.gameObject.tag == "Player") {
+            FindObjectOfType<Health_System_2D>().DamagePlayer(damage_to_player);
         }
     }
 }
