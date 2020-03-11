@@ -8,6 +8,7 @@ public class Enemy_Movement_2D : MonoBehaviour {
     [SerializeField] private float damage_delay;
     [SerializeField] private float damage_timer;
     [SerializeField] private Transform wall_detection;
+    [SerializeField] private Transform weak_point;
 
     private bool moving_right = true;
 
@@ -57,5 +58,18 @@ public class Enemy_Movement_2D : MonoBehaviour {
             FindObjectOfType<Health_System_2D>().DamagePlayer(damage_to_player);
             damage_dealt = true;
         }
+    }
+
+    public void EnemyDeath() {
+        Destroy(gameObject);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision_2D) {
+        //if (collision_2D.gameObject.tag == "Player") {
+        //    float height = collision_2D.contacts[0].point.y - weak_point.position.y;
+        //    if (height > 0) {
+        //        Destroy(gameObject);
+        //    }
+        //}
     }
 }

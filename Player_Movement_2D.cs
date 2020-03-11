@@ -79,6 +79,17 @@ public class Player_Movement_2D : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D collision_2D) {
+        Enemy_Movement_2D enemy = collision_2D.collider.GetComponent<Enemy_Movement_2D>();
+
+        if (enemy != null) {
+            foreach (ContactPoint2D point2D in collision_2D.contacts) {
+                if (point2D.normal.y >= 0.9f) {
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 250f);
+                    enemy.EnemyDeath();
+                }
+            }
+        }
+
         if (collision_2D.gameObject.tag == "Invisible_Wall") {
             Physics2D.IgnoreCollision(collision_2D.collider, GetComponent<Collider2D>());
         }
