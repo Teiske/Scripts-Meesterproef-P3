@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class Enemy_Movement_2D : MonoBehaviour {
 
     [SerializeField] private float move_speed;
@@ -61,7 +63,7 @@ public class Enemy_Movement_2D : MonoBehaviour {
     }
 
     public void EnemyDeath() {
-        Destroy(gameObject);
+        Destroy(gameObject, 0.5f);
     }
 
     private void OnCollisionEnter2D(Collision2D collision_2D) {

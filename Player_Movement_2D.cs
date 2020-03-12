@@ -5,7 +5,9 @@
 public class Player_Movement_2D : MonoBehaviour {
 
     private Rigidbody2D rigidBody2D;
-    
+
+    private Animator animator2D;
+
     [SerializeField] private float max_speed;
     [SerializeField] private float jump_Force;
     [SerializeField] private float fall_multiplier;
@@ -21,9 +23,12 @@ public class Player_Movement_2D : MonoBehaviour {
 
     private int layer_invisble_wall;
 
+    private bool is_facing_right = true;
+
     // Start is called before the first frame update
     void Start() {
         rigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
+        animator2D = GetComponent<Animator>();
         layer_invisble_wall = LayerMask.NameToLayer("Invisible_Wall");
     }
 
@@ -42,9 +47,17 @@ public class Player_Movement_2D : MonoBehaviour {
 
     // Move is called when either A/D or the left/right arrow keys are pressed
     private void Move() {
-        float x_movement = Input.GetAxis("Horizontal");
+        float x_movement = Input.GetAxisRaw("Horizontal");
         float move_by = x_movement * max_speed;
         rigidBody2D.velocity = new Vector2(move_by, rigidBody2D.velocity.y);
+        animator2D.SetFloat("max_speed", Mathf.Abs(move_by));
+
+        if (move_by > 0 && !is_facing_right) {
+            Flip();
+        }
+        else if (move_by < 0 && is_facing_right) {
+            Flip();
+        }
     }
 
     // Jump is called when the space key is pressed
@@ -78,13 +91,22 @@ public class Player_Movement_2D : MonoBehaviour {
         }
     }
 
+    // Flip is called when the player changes directions
+    private void Flip() {
+        is_facing_right = !is_facing_right;
+
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision_2D) {
         Enemy_Movement_2D enemy = collision_2D.collider.GetComponent<Enemy_Movement_2D>();
 
         if (enemy != null) {
             foreach (ContactPoint2D point2D in collision_2D.contacts) {
                 if (point2D.normal.y >= 0.9f) {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 250f);
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 125f);
                     enemy.EnemyDeath();
                 }
             }
