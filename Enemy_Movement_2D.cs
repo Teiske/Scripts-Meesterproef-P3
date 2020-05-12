@@ -4,19 +4,25 @@
 [RequireComponent(typeof(BoxCollider2D))]
 public class Enemy_Movement_2D : MonoBehaviour {
 
+    Score_System_2D score_system_2D;
+
     [SerializeField] private float move_speed;
     [SerializeField] private float ray_distance;
     [SerializeField] private int damage_to_player;
     [SerializeField] private float damage_delay;
     [SerializeField] private float damage_timer;
     [SerializeField] private Transform wall_detection;
-    [SerializeField] private Transform weak_point;
 
     private bool moving_right = true;
 
     private bool damage_dealt = false;
 
     private int layer_invisble_wall;
+
+    // Awake is called when the script instance is being loaded.
+    private void Awake() {
+        score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
+    }
 
     // Start is called before the first frame update
     void Start() {
@@ -38,10 +44,10 @@ public class Enemy_Movement_2D : MonoBehaviour {
     // FixedUpdate is called at a fixed time interval
     void FixedUpdate() {
         // Make the enemy move to the right
-        transform.Translate(Vector2.right * move_speed * Time.deltaTime);
+        transform.Translate(Vector2.left * move_speed * Time.deltaTime);
 
         // Cast out a ray infront of the enemy
-        RaycastHit2D wall_info = Physics2D.Raycast(wall_detection.position, Vector2.right, ray_distance);
+        RaycastHit2D wall_info = Physics2D.Raycast(wall_detection.position, Vector2.left, ray_distance);
 
         // If the ray hits an invisible wall, make the enemy walk to the left and vice versa
         if (wall_info.transform.gameObject.layer == layer_invisble_wall) {
@@ -62,16 +68,8 @@ public class Enemy_Movement_2D : MonoBehaviour {
         }
     }
 
+    // EnemyDeath is called when the player jumps on the enemy
     public void EnemyDeath() {
-        Destroy(gameObject, 0.5f);
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision_2D) {
-        //if (collision_2D.gameObject.tag == "Player") {
-        //    float height = collision_2D.contacts[0].point.y - weak_point.position.y;
-        //    if (height > 0) {
-        //        Destroy(gameObject);
-        //    }
-        //}
+        Destroy(gameObject);
     }
 }

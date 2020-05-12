@@ -4,8 +4,11 @@
 [RequireComponent(typeof(BoxCollider2D))]
 public class Player_Movement_2D : MonoBehaviour {
 
-    private Rigidbody2D rigidBody2D;
+    private Health_System_2D health_system_2D;
+    private Enemy_Movement_2D enemy_movement_2D;
+    private Score_System_2D score_system_2D;
 
+    private Rigidbody2D rigidBody2D;
     private Animator animator2D;
 
     [SerializeField] private float max_speed;
@@ -24,17 +27,30 @@ public class Player_Movement_2D : MonoBehaviour {
     private int layer_invisble_wall;
 
     private bool is_facing_right = true;
+    private bool is_jumping = false;
+
+    // Awake is called when the script instance is being loaded.
+    private void Awake() {
+        health_system_2D = GameObject.Find("Gamemanager").GetComponent<Health_System_2D>();
+        score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
+    }
 
     // Start is called before the first frame update
     void Start() {
         rigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
         animator2D = GetComponent<Animator>();
+
         layer_invisble_wall = LayerMask.NameToLayer("Invisible_Wall");
     }
 
     // Update is called once per frame
     void Update() {
-        
+        if (Input.GetButtonDown("Jump")) {
+            is_jumping = true;
+        }
+        if (is_jumping == true) {
+            animator2D.SetBool("is_jumping", true);
+        }
     }
 
     // FixedUpdate is called at a fixed time interval
@@ -82,6 +98,10 @@ public class Player_Movement_2D : MonoBehaviour {
         Collider2D collider = Physics2D.OverlapCircle(is_ground_checker.position, check_ground_radius, ground_layer);
         if (collider != null) {
             is_grounded = true;
+            is_jumping = false;
+            if (is_jumping == false) {
+                animator2D.SetBool("is_jumping", false);
+            }
         }
         else {
             if (is_grounded) {
@@ -101,13 +121,14 @@ public class Player_Movement_2D : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D collision_2D) {
-        Enemy_Movement_2D enemy = collision_2D.collider.GetComponent<Enemy_Movement_2D>();
+        enemy_movement_2D = collision_2D.collider.GetComponent<Enemy_Movement_2D>();
 
-        if (enemy != null) {
+        if (enemy_movement_2D != null) {
             foreach (ContactPoint2D point2D in collision_2D.contacts) {
                 if (point2D.normal.y >= 0.9f) {
                     gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 125f);
-                    enemy.EnemyDeath();
+                    enemy_movement_2D.EnemyDeath();
+                    score_system_2D.EnemyScore();
                 }
             }
         }
@@ -115,5 +136,9 @@ public class Player_Movement_2D : MonoBehaviour {
         if (collision_2D.gameObject.tag == "Invisible_Wall") {
             Physics2D.IgnoreCollision(collision_2D.collider, GetComponent<Collider2D>());
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D trigger_2D) {
+        score_system_2D.Score_Value += 10;
     }
 }
