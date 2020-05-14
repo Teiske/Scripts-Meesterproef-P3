@@ -6,6 +6,7 @@ public class Player_Movement_2D : MonoBehaviour {
 
     private Health_System_2D health_system_2D;
     private Enemy_Movement_2D enemy_movement_2D;
+    private Boss_Movement_2D boss_Movement_2D;
     private Score_System_2D score_system_2D;
 
     private Rigidbody2D rigidBody2D;
@@ -122,6 +123,7 @@ public class Player_Movement_2D : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision_2D) {
         enemy_movement_2D = collision_2D.collider.GetComponent<Enemy_Movement_2D>();
+        boss_Movement_2D = collision_2D.collider.GetComponent<Boss_Movement_2D>();
 
         if (enemy_movement_2D != null) {
             foreach (ContactPoint2D point2D in collision_2D.contacts) {
@@ -129,6 +131,16 @@ public class Player_Movement_2D : MonoBehaviour {
                     gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 125f);
                     enemy_movement_2D.EnemyDeath();
                     score_system_2D.EnemyScore();
+                }
+            }
+        }
+
+        if (boss_Movement_2D != null) {
+            foreach (ContactPoint2D point2D in collision_2D.contacts) {
+                if (point2D.normal.y >= 0.9f) {
+                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
+                    boss_Movement_2D.DamageBoss();
+                    //Debug.Log();
                 }
             }
         }
