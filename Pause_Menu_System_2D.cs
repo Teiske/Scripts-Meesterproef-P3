@@ -35,15 +35,11 @@ public class Pause_Menu_System_2D : MonoBehaviour {
     }
 
     public void QuitToMenuPress() {
-
         SceneManager.LoadScene(0);
-
     }
 
     public void ContinuePress() {
-
         pause_menu.enabled = false;
-
     }
 
     public void ExitGame() {

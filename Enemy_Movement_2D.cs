@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BoxCollider2D))]
 public class Enemy_Movement_2D : MonoBehaviour {
 
     Score_System_2D score_system_2D;
@@ -17,8 +15,6 @@ public class Enemy_Movement_2D : MonoBehaviour {
 
     private bool damage_dealt = false;
 
-    private int layer_invisble_wall;
-
     // Awake is called when the script instance is being loaded.
     private void Awake() {
         score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
@@ -26,13 +22,30 @@ public class Enemy_Movement_2D : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        layer_invisble_wall = LayerMask.NameToLayer("Invisible_Wall");
+       
     }
 
     // Update is called once per frame
     void Update() {
+        // Cast out a ray infront of the enemy
+        RaycastHit2D hit_2D = Physics2D.Raycast(wall_detection.position, Vector2.left, ray_distance);
+
+        // If the ray hits an invisible wall, make the enemy walk to the left and vice versa
+        if (hit_2D.collider.CompareTag("Invisible_Wall")) {
+            EnemyFlip();
+            Debug.Log(hit_2D + " hit the wall");
+        }
+
+        // If the hits the player, deal damage to the player
+        if (hit_2D.collider.CompareTag("Player") && damage_dealt == false) {
+            Debug.Log(hit_2D + " hit the player");
+            FindObjectOfType<Health_System_2D>().DamagePlayer(damage_to_player);
+            damage_dealt = true;
+            EnemyFlip();
+        }
+
         // If damage has been dealt, wait a few seconds before dealing damage again
-        if(damage_dealt == true) {
+        if (damage_dealt == true) {
             damage_timer += Time.deltaTime;
             if (damage_timer >= damage_delay) {
                 damage_timer = 0f;
@@ -45,26 +58,16 @@ public class Enemy_Movement_2D : MonoBehaviour {
     void FixedUpdate() {
         // Make the enemy move to the right
         transform.Translate(Vector2.left * move_speed * Time.deltaTime);
+    }
 
-        // Cast out a ray infront of the enemy
-        RaycastHit2D wall_info = Physics2D.Raycast(wall_detection.position, Vector2.left, ray_distance);
-
-        // If the ray hits an invisible wall, make the enemy walk to the left and vice versa
-        if (wall_info.transform.gameObject.layer == layer_invisble_wall) {
-            if (moving_right == true) {
-                transform.eulerAngles = new Vector3(0, -180, 0);
-                moving_right = false;
-            }
-            else {
-                transform.eulerAngles = new Vector3(0, 0, 0);
-                moving_right = true;
-            }
+    private void EnemyFlip() {
+        if (moving_right == true) {
+            transform.eulerAngles = new Vector3(0, -180, 0);
+            moving_right = false;
         }
-
-        // If the hits the player, deal damage to the player
-        if (wall_info.transform.gameObject.tag == "Player" && damage_dealt == false) {
-            FindObjectOfType<Health_System_2D>().DamagePlayer(damage_to_player);
-            damage_dealt = true;
+        else {
+            transform.eulerAngles = new Vector3(0, 0, 0);
+            moving_right = true;
         }
     }
 

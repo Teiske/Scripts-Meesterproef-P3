@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -126,27 +127,26 @@ public class Player_Movement_2D : MonoBehaviour {
         boss_Movement_2D = collision_2D.collider.GetComponent<Boss_Movement_2D>();
 
         if (enemy_movement_2D != null) {
-            foreach (ContactPoint2D point2D in collision_2D.contacts) {
-                if (point2D.normal.y >= 0.9f) {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 125f);
-                    enemy_movement_2D.EnemyDeath();
-                    score_system_2D.EnemyScore();
-                }
+            if (collision_2D.collider.GetType() == typeof(CapsuleCollider2D)) {
+                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
+                score_system_2D.EnemyScore();
+                enemy_movement_2D.EnemyDeath();
             }
         }
 
         if (boss_Movement_2D != null) {
-            foreach (ContactPoint2D point2D in collision_2D.contacts) {
-                if (point2D.normal.y >= 0.9f) {
-                    gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
-                    boss_Movement_2D.DamageBoss();
-                    //Debug.Log();
-                }
+            if (collision_2D.collider.GetType() == typeof(CapsuleCollider2D)) {
+                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
+                boss_Movement_2D.DamageBoss();
             }
         }
 
         if (collision_2D.gameObject.tag == "Invisible_Wall") {
             Physics2D.IgnoreCollision(collision_2D.collider, GetComponent<Collider2D>());
+        }
+
+        if (collision_2D.gameObject.tag == "End_Level") {
+            SceneManager.LoadScene(2);
         }
     }
 
