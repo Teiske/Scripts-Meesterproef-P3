@@ -3,7 +3,7 @@
 public class Score_System_2D : MonoBehaviour {
 
     [SerializeField] private static int score_value = 0;
-    private int enemy_value = 10;
+    private int enemy_value = 20;
     
     public int Score_Value {
         get { return score_value; }

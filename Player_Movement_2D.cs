@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BoxCollider2D))]
 public class Player_Movement_2D : MonoBehaviour {
 
     private Health_System_2D health_system_2D;
@@ -15,39 +13,37 @@ public class Player_Movement_2D : MonoBehaviour {
 
     [SerializeField] private float max_speed;
     [SerializeField] private float jump_Force;
+    [SerializeField] private float groundend_skin;
     [SerializeField] private float fall_multiplier;
     [SerializeField] private float low_jump_multiplier;
 
-    [SerializeField] private bool is_grounded = false;
-    [SerializeField] private Transform is_ground_checker;
-    [SerializeField] private float check_ground_radius;
-    [SerializeField] private LayerMask ground_layer;
-
-    [SerializeField] private float remember_grounded_for;
-    [SerializeField] private float last_time_grounded;
-
-    private int layer_invisble_wall;
+    [SerializeField] private LayerMask layer_mask;
 
     private bool is_facing_right = true;
-    private bool is_jumping = false;
+    private bool is_jumping;
+    private bool is_grounded;
+
+    private Vector2 player_size;
+    private Vector2 box_size;
 
     // Awake is called when the script instance is being loaded.
     private void Awake() {
         health_system_2D = GameObject.Find("Gamemanager").GetComponent<Health_System_2D>();
         score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
+
+        player_size = GetComponent<BoxCollider2D>().size;
+        box_size = new Vector2(player_size.x, groundend_skin);
     }
 
     // Start is called before the first frame update
     void Start() {
-        rigidBody2D = this.gameObject.GetComponent<Rigidbody2D>();
+        rigidBody2D = GetComponent<Rigidbody2D>();
         animator2D = GetComponent<Animator>();
-
-        layer_invisble_wall = LayerMask.NameToLayer("Invisible_Wall");
     }
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetButtonDown("Jump")) {
+        if (Input.GetButtonDown("Jump") && is_grounded) {
             is_jumping = true;
         }
         if (is_jumping == true) {
@@ -80,37 +76,30 @@ public class Player_Movement_2D : MonoBehaviour {
 
     // Jump is called when the space key is pressed
     private void Jump() {
-        if (Input.GetKey(KeyCode.Space) && (is_grounded || Time.time - last_time_grounded <= remember_grounded_for)) {
-            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jump_Force);
-        }
+        if (is_jumping == true) {
+            rigidBody2D.AddForce(Vector2.up * jump_Force, ForceMode2D.Impulse);
+            is_jumping = false;
+            is_grounded = false;
+        } 
     }
 
     // BetterJump is called after jump to smooth the jump in the air and the fall back down
     private void BetterJump() {
         if (rigidBody2D.velocity.y < 0) {
-            rigidBody2D.velocity += Vector2.up * Physics2D.gravity * (fall_multiplier - 1) * Time.deltaTime;
+            rigidBody2D.gravityScale = fall_multiplier;
         }
-        else if (rigidBody2D.velocity.y > 0 && !Input.GetKey(KeyCode.Space)) {
-            rigidBody2D.velocity += Vector2.up * Physics2D.gravity * (low_jump_multiplier - 1) * Time.deltaTime;
+        else if (rigidBody2D.velocity.y > 0 && !Input.GetButton("Jump")) {
+            rigidBody2D.gravityScale = low_jump_multiplier;
+        }
+        else {
+            rigidBody2D.gravityScale = 1f;
         }
     }
 
     // CheckIfGrounded is called at a fixed interval in FixedUpdate to check if the player is grounded
     private void CheckIfGrounded() {
-        Collider2D collider = Physics2D.OverlapCircle(is_ground_checker.position, check_ground_radius, ground_layer);
-        if (collider != null) {
-            is_grounded = true;
-            is_jumping = false;
-            if (is_jumping == false) {
-                animator2D.SetBool("is_jumping", false);
-            }
-        }
-        else {
-            if (is_grounded) {
-                last_time_grounded = Time.time;
-            }
-            is_grounded = false;
-        }
+        Vector2 box_center = (Vector2)transform.position + Vector2.down * (player_size.y + box_size.y) * 0.5f;
+        is_grounded = (Physics2D.OverlapBox(box_center, box_size, 0f, layer_mask) != null);
     }
 
     // Flip is called when the player changes directions
