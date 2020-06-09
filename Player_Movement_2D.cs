@@ -46,9 +46,6 @@ public class Player_Movement_2D : MonoBehaviour {
         if (Input.GetButtonDown("Jump") && is_grounded) {
             is_jumping = true;
         }
-        if (is_jumping == true) {
-            animator2D.SetBool("is_jumping", true);
-        }
     }
 
     // FixedUpdate is called at a fixed time interval
@@ -78,15 +75,18 @@ public class Player_Movement_2D : MonoBehaviour {
     private void Jump() {
         if (is_jumping == true) {
             rigidBody2D.AddForce(Vector2.up * jump_Force, ForceMode2D.Impulse);
+            animator2D.SetTrigger("is_jumping");
             is_jumping = false;
             is_grounded = false;
-        } 
+        }
     }
 
     // BetterJump is called after jump to smooth the jump in the air and the fall back down
     private void BetterJump() {
         if (rigidBody2D.velocity.y < 0) {
             rigidBody2D.gravityScale = fall_multiplier;
+            animator2D.SetBool("is_jumping", false);
+            animator2D.SetBool("is_falling", true);
         }
         else if (rigidBody2D.velocity.y > 0 && !Input.GetButton("Jump")) {
             rigidBody2D.gravityScale = low_jump_multiplier;
@@ -100,6 +100,9 @@ public class Player_Movement_2D : MonoBehaviour {
     private void CheckIfGrounded() {
         Vector2 box_center = (Vector2)transform.position + Vector2.down * (player_size.y + box_size.y) * 0.5f;
         is_grounded = (Physics2D.OverlapBox(box_center, box_size, 0f, layer_mask) != null);
+        if (is_grounded) {
+            animator2D.SetBool("is_falling", false);
+        }
     }
 
     // Flip is called when the player changes directions
