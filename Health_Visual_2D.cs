@@ -16,11 +16,6 @@ public class Health_Visual_2D : MonoBehaviour {
         health_system_2D = GameObject.Find("Gamemanager").GetComponent<Health_System_2D>();
     }
 
-    // Start is called before the first frame update
-    private void Start() {
-        
-    }
-
     // Update is called once per frame
     private void Update() {
         // Set the health images equal to the player current health

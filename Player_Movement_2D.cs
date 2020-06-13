@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class Player_Movement_2D : MonoBehaviour {
 
-    private Health_System_2D health_system_2D;
     private Enemy_Movement_2D enemy_movement_2D;
     private Boss_Movement_2D boss_Movement_2D;
     private Score_System_2D score_system_2D;
@@ -28,7 +27,6 @@ public class Player_Movement_2D : MonoBehaviour {
 
     // Awake is called when the script instance is being loaded.
     private void Awake() {
-        health_system_2D = GameObject.Find("Gamemanager").GetComponent<Health_System_2D>();
         score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
 
         player_size = GetComponent<BoxCollider2D>().size;
@@ -93,6 +91,7 @@ public class Player_Movement_2D : MonoBehaviour {
         }
         else {
             rigidBody2D.gravityScale = 1f;
+            animator2D.SetBool("is_falling", false);
         }
     }
 
@@ -100,18 +99,18 @@ public class Player_Movement_2D : MonoBehaviour {
     private void CheckIfGrounded() {
         Vector2 box_center = (Vector2)transform.position + Vector2.down * (player_size.y + box_size.y) * 0.5f;
         is_grounded = (Physics2D.OverlapBox(box_center, box_size, 0f, layer_mask) != null);
-        if (is_grounded) {
-            animator2D.SetBool("is_falling", false);
-        }
     }
 
     // Flip is called when the player changes directions
     private void Flip() {
-        is_facing_right = !is_facing_right;
-
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
+        if (is_facing_right == true) {
+            transform.eulerAngles = new Vector3(0, -180, 0);
+            is_facing_right = false;
+        }
+        else {
+            transform.eulerAngles = new Vector3(0, 0, 0);
+            is_facing_right = true;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision_2D) {
@@ -120,7 +119,7 @@ public class Player_Movement_2D : MonoBehaviour {
 
         if (enemy_movement_2D != null) {
             if (collision_2D.collider.GetType() == typeof(CapsuleCollider2D)) {
-                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
+                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 281.25f);
                 score_system_2D.EnemyScore();
                 enemy_movement_2D.EnemyDeath();
             }
@@ -128,21 +127,25 @@ public class Player_Movement_2D : MonoBehaviour {
 
         if (boss_Movement_2D != null) {
             if (collision_2D.collider.GetType() == typeof(CapsuleCollider2D)) {
-                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 187.5f);
+                gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 375f);
                 boss_Movement_2D.DamageBoss();
             }
         }
 
-        if (collision_2D.gameObject.tag == "Invisible_Wall") {
+        if (collision_2D.gameObject.CompareTag("Invisible_Wall")) {
             Physics2D.IgnoreCollision(collision_2D.collider, GetComponent<Collider2D>());
         }
 
-        if (collision_2D.gameObject.tag == "End_Level") {
+        if (collision_2D.gameObject.CompareTag("End_Level")) {
             SceneManager.LoadScene(2);
+        }
+
+        if (collision_2D.gameObject.CompareTag("Toxic_Water")) {
+            Scene scene = SceneManager.GetActiveScene(); SceneManager.LoadScene(scene.name);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D trigger_2D) {
-        score_system_2D.Score_Value += 10;
+        score_system_2D.Score_Value += 5;
     }
 }

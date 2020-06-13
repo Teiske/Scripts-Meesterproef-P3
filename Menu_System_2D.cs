@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class Menu_System_2D : MonoBehaviour {
@@ -13,7 +12,6 @@ public class Menu_System_2D : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         quit_menu = quit_menu.GetComponent<Canvas>();
-
         start_button = start_button.GetComponent<Button>();
         exit_button = exit_button.GetComponent<Button>();
 

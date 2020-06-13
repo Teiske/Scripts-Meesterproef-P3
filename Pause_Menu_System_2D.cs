@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class Pause_Menu_System_2D : MonoBehaviour {
@@ -13,9 +12,7 @@ public class Pause_Menu_System_2D : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        
         pause_menu = pause_menu.GetComponent<Canvas>();
-       
         Continue_button = Continue_button.GetComponent<Button>();
         quitToMenu_button = quitToMenu_button.GetComponent<Button>();
         exit_button = exit_button.GetComponent<Button>();

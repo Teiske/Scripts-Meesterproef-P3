@@ -12,11 +12,6 @@ public class Score_Visual_2D : MonoBehaviour {
         score_system_2D = GameObject.Find("Gamemanager").GetComponent<Score_System_2D>();
     }
 
-    // Start is called before the first frame update
-    void Start() {
-        
-    }
-
     // Update is called once per frame
     void Update() {
         score_text.text = "Score: " + score_system_2D.Score_Value;

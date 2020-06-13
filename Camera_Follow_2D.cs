@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Camera_Follow_2D : MonoBehaviour {
 
@@ -15,11 +13,6 @@ public class Camera_Follow_2D : MonoBehaviour {
     void Start() {
         threshold = CalculateThreshold();
         rigidbody_2D = follow_object.GetComponent<Rigidbody2D>();
-    }
-
-    // Update is called once per frame
-    void Update() {
-        
     }
 
     // FixedUpdate is called at a fixed time interval
@@ -39,7 +32,7 @@ public class Camera_Follow_2D : MonoBehaviour {
             new_position.y = follow.y;
         }
         float move_speed = rigidbody_2D.velocity.magnitude > camera_speed ? rigidbody_2D.velocity.magnitude : camera_speed;
-        transform.position = Vector3.MoveTowards(transform.position, new_position, move_speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, new_position, move_speed * Time.fixedDeltaTime);
     }
 
     // CalculateThreshold is used to see when the camera needs to start following the player
